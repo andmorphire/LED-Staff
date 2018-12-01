@@ -8,7 +8,7 @@
 // Fast noise and pallettes, fast noise and movement, lightning and two sin pal adpated from Andrew Tualine
 //
 // Andrew Morton 2018
-
+// errors- colourfade not swtiching, noise with pallettes not working
 
 #if FASTLED_VERSION < 3001000
 #error "Requires FastLED 3.1 or later; check github for latest code."
