@@ -15,17 +15,21 @@
 
 #define DATA_PIN    3
 //#define CLK_PIN   4
-#define LED_TYPE    WS2812
+#define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 #define NUM_LEDS    90
-#define FREQUENCY   50                // controls the interval between strikes
+
+//for lightning
+#define FREQUENCY   5   // controls the interval between strikes
 #define FLASHES     11 
 CRGB leds[NUM_LEDS];
-
-#define BRIGHTNESS          120
-#define FRAMES_PER_SECOND  120
 #define color White;
 unsigned int dimmer = 1;
+
+
+#define BRIGHTNESS          255
+#define FRAMES_PER_SECOND  120
+
 
 void setup() {
   delay(3000); // 3 second delay for recovery
@@ -41,7 +45,7 @@ void setup() {
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm, lightning, POV };
+SimplePatternList gPatterns = { rainbow, rainbowWithGlitter, confetti, sinelon, juggle, bpm, lightning };
 
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
@@ -141,25 +145,4 @@ void lightning()
     delay(50+random8(100));               // shorter delay between strokes  
   }
   delay(random8(FREQUENCY)*100);          // delay between strikes
-}
-
-const byte data[] PROGMEM = {0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,0,0,0,0,0,0,0,0,0};
-int pixels = 7;
-int frames = 7;
-int fps = 25;
-int currentFrame = 0;
-void POV() {
-    for (int i=0; i<NUM_LEDS; i++) {
-        int pixelIndex = i % pixels;
-        int index = currentFrame*pixels*3 + pixelIndex*3;
-
-        //Note: We're using pgm_read_byte_near to read bytes out of the data array stored in PROGMEM. These functions are not required for all configurations
-        leds[i] = CRGB(pgm_read_byte_near(data+index),pgm_read_byte_near(data+index+1),pgm_read_byte_near(data+index+2));
-   //     leds[i].setRGB(pgm_read_byte_near(data+index),pgm_read_byte_near(data+index+1),pgm_read_byte_near(data+index+2));
-        
-    }
-    FastLED.show();
-    currentFrame ++;
-    if (currentFrame >= frames) currentFrame = 0;
-    delay(1000/fps);
 }
