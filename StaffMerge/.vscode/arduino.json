@@ -1,4 +1,7 @@
 {
     "board": "arduino:avr:nano",
-    "configuration": "cpu=atmega328old"
+    "configuration": "cpu=atmega328old",
+    "sketch": "StaffMerge.ino",
+    "output": "C:/build/",
+    "port": "COM3"
 }
