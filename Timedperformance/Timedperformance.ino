@@ -24,8 +24,19 @@ CRGB leds[NUM_LEDS];
 #define FRAMES_PER_SECOND  240
 
 
+#define FREQUENCY     5                // controls the interval between strikes for lightning
+#define FLASHES       20                 // the upper limit of flashes per strike for lightning
+// #define color White; //for lightning- do we need this?
+unsigned int dimmer = 1; // for lightning
+
+
+uint8_t hue = 32;  //for meteor
+byte idex = 255;   //for meteor
+byte meteorLength = 29;  //for meteor
+
+
 void setup() {
-  delay(300); // 3 second delay for recovery
+  delay(300); // 0.3 second delay for recovery
   
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -104,23 +115,34 @@ static bool fromTC( uint32_t tc)
 void Performance()
 {
     AT(0,0,00.001) { FastLED.setBrightness(BRIGHTNESS); }
-  FROM(0,0,00.100) { confetti(); }
-  FROM(0,0,5.500) { povA(); }
-  FROM(0,0,15.375) { povB(); }
-  FROM(0,0,25.333) { bpm(); }
-  FROM(0,0,30.500) { sinelon(); }
-  FROM(0,0,35.000) { juggle(); }
-  FROM(0,0,43.750) { confetti(); }
-    AT(0,0,45.000)   { gHue = HUE_PINK; }
-    AT(0,0,50.000)   { fill_solid(leds, NUM_LEDS, CRGB::Red); }
-    AT(0,0,55.000)   { fill_solid(leds, NUM_LEDS, CRGB::Blue); }
-  FROM(0,1,0.500) { fadeToBlack(); }  
-  FROM(0,1,5.000) { applause(); }  
-    AT(0,1,6.000)   { FastLED.setBrightness(BRIGHTNESS/2); }
-    AT(0,1,7.000)   { FastLED.setBrightness(BRIGHTNESS/4); }
-    AT(0,1,8.000)   { FastLED.setBrightness(BRIGHTNESS/8); }
-    AT(0,1,9.000)   { FastLED.setBrightness(BRIGHTNESS/16); }
-  FROM(0,1,10.000) { fadeToBlack(); }  
+  FROM(0,0,00.100) { sinelon(); }
+  FROM(0,0,07.1200) { meteor(); }
+  FROM(0,0,17.01) { confetti(); }
+  FROM(0,0,25.76) { rainbow(); }
+  FROM(0,0,34.05) { lightning(); }
+  FROM(0,0,42.930) { povA(); }
+  FROM(0,0,52.650) { juggle(); }
+  FROM(0,1,00.930) { bpm(); }
+  FROM(0,1,10.070) { colorshift(); }
+  FROM(0,1,20.560) { sinelon(); }
+  FROM(0,1,26.810) { juggle(); }
+  FROM(0,1,32.810) { meteor(); }
+  FROM(0,1,42.000) { lightning(); }
+  FROM(0,1,51.690) { povA(); }
+  FROM(0,2,02.020) { povB(); }
+  FROM(0,2,14.180) { rainbowWithGlitter(); }
+  FROM(0,2,22.590) { colorshift(); }
+  FROM(0,2,26.750) { povB(); }
+  FROM(0,2,31.750) { confetti(); }
+    AT(0,2,32.000)   { gHue = HUE_PINK; }
+    AT(0,2,33.000)   { fill_solid(leds, NUM_LEDS, CRGB::Red); }
+    AT(0,2,34.000)   { fill_solid(leds, NUM_LEDS, CRGB::Blue); } 
+  FROM(0,2,35.000) { applause(); }  
+    AT(0,2,36.000)   { FastLED.setBrightness(BRIGHTNESS/2); }
+    AT(0,2,37.000)   { FastLED.setBrightness(BRIGHTNESS/4); }
+    AT(0,2,38.000)   { FastLED.setBrightness(BRIGHTNESS/8); }
+    AT(0,2,39.000)   { FastLED.setBrightness(BRIGHTNESS/16); }
+  FROM(0,2,40.000) { fadeToBlack(); }  
 }
 
 
@@ -211,6 +233,16 @@ void sinelon()
   leds[pos] += CHSV( gHue, 255, 192);
 }
 
+//void twosinelon()
+//{
+//  // a colored dot sweeping back and forth, with fading trails
+//  fadeToBlackBy( leds, NUM_LEDS, 20);
+//  int pos = beatsin16(13,0,NUM_LEDS -1);
+//  int pos2 = beatsin16(13,NUM_LEDS -1,1);
+//  leds[pos] += CHSV( gHue, 255, 192);
+//  leds[pos2] += CHSV( gHue, 255, 192);
+//}
+
 // An animation to play while the crowd goes wild after the big performance
 void applause()
 {
@@ -265,4 +297,97 @@ void povB() {
   FastLED.show();
   currentFrame ++;
   if (currentFrame >= frames) currentFrame = 0;
+}
+
+void lightning() 
+{
+  for (int flashCounter = 0; flashCounter < random8(3,FLASHES); flashCounter++)
+  {
+    if(flashCounter == 0) dimmer = 5;     // the brightness of the leader is scaled down by a factor of 5
+    else dimmer = random8(1,3);           // return strokes are brighter than the leader
+    
+    FastLED.showColor(CHSV(255, 0, 255/dimmer));
+    delay(random8(4,10));                 // each flash only lasts 4-10 milliseconds
+    FastLED.showColor(CHSV(255, 0, 0));
+    
+    if (flashCounter == 0) delay (150);   // longer delay until next flash after the leader
+    delay(50+random8(100));               // shorter delay between strokes  
+  }
+  delay(random8(FREQUENCY)*10);          // delay between strikes
+}
+
+void meteor(){
+  // slide all the pixels down one in the array
+  memmove8( &leds[1], &leds[0], (NUM_LEDS - 1) * 3 );
+
+  // increment the meteor display frame
+  idex++;
+  // make sure we don't drift into space
+  if ( idex > meteorLength ) {
+    idex = 0;
+    // cycle through hues in each successive meteor tail
+    hue += 32;  
+  }
+
+  // this switch controls the actual meteor animation, i.e., what gets placed in the
+  // first position and then subsequently gets moved down the strip by the memmove above
+  switch ( idex ) {
+  case 0:
+    leds[0] = CRGB(200,200,200); 
+    break;
+  case 1:
+    leds[0] = CHSV((hue - 20), 255, 210); 
+    break;
+  case 2:
+    leds[0] = CHSV((hue - 22), 255, 180); 
+    break;
+  case 3:
+    leds[0] = CHSV((hue - 23), 255, 150); 
+    break;
+  case 4:
+    leds[0] = CHSV((hue - 24), 255, 110); 
+    break;
+  case 5:
+    leds[0] = CHSV((hue - 25), 255, 90); 
+    break;
+  case 6:
+    leds[0] = CHSV((hue - 26), 160, 60); 
+    break;
+  case 7:
+    leds[0] = CHSV((hue - 27), 140, 40); 
+    break;
+  case 8:
+    leds[0] = CHSV((hue - 28), 120, 20); 
+    break;
+  case 9:
+    leds[0] = CHSV((hue - 29), 100, 20); 
+    break;
+  default:
+    leds[0] = CRGB::Black; 
+  }
+
+  // show the blinky
+  FastLED.show();  
+  // control the animation speed/frame rate
+  delay(50);
+} 
+
+void colorshift() {
+    //beatsin16 is a function on the FastLED library generating sinwave, (5) is bpm, (0,255) is value range.
+    //value range will create the breathing effect 
+    //int pos = beatsin16(5,0,192); // generating the sinwave 
+    fill_solid(leds, NUM_LEDS, CHSV( gHue, 255, 255)); // CHSV (hue, saturation, value);
+    FastLED.show();
+    EVERY_N_MILLISECONDS(100) {gHue++;} 
+    // shifting the HUE value by incrementing every millisecond this creates the spectrum wave
+
+    /* spectrum wave
+     * fill_solid(leds, NUM_LEDS, CHSV( gHue, 255, 255)); // remove pos
+     * FastLED.show();
+     * EVERY_N_MILLISECONDS(100) {gHue++;} 
+     */
+     //additional codes, just to share
+    /* color spectrum generator
+     *  fill_rainbow( leds, NUM_LEDS, gHue, 3);
+     */
 }
