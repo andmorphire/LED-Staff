@@ -6,7 +6,7 @@
 #define NUM_LEDS    90
 
 #define BRIGHTNESS  255
-#define FRAMES_PER_SECOND 60
+#define FRAMES_PER_SECOND 120
 
 bool gReverseDirection = false;
 

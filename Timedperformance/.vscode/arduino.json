@@ -1,7 +1,7 @@
 {
     "board": "arduino:avr:nano",
     "configuration": "cpu=atmega328old",
-    "sketch": "timedperformance.ino",
+    "sketch": "Timedperformance.ino",
     "output": "C:/build/",
     "port": "COM3"
 }

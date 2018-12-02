@@ -114,7 +114,7 @@ uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
   
 void loop() {
-  static double fps = 600;
+  static int fps = 120;
     
   fps = 120;
   if (gPatterns[gCurrentPatternNumber] == povA) {
@@ -125,12 +125,12 @@ void loop() {
   }
 
   // Call the current pattern function once, updating the 'leds' array
-  //gPatterns[gCurrentPatternNumber]();
-povA();
+  gPatterns[gCurrentPatternNumber]();
+
   // send the 'leds' array out to the actual LED strip
   FastLED.show();
   // insert a delay to keep the framerate modest
-  delay(1000/fps); 
+  FastLED.delay(1000/fps); 
 
   // do some periodic updates
   EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
