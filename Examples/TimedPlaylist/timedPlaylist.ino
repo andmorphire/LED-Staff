@@ -21,26 +21,25 @@
 #define NUM_LEDS    90
 CRGB leds[NUM_LEDS];
 
-#define BRIGHTNESS          96
+#define BRIGHTNESS          255
 #define FRAMES_PER_SECOND  120
 
 
 // List of patterns to cycle through.  Each is defined as a separate function below.
 
 typedef void (*SimplePattern)();
-typedef SimplePattern SimplePatternList[];
+// typedef SimplePattern SimplePatternList[];
 typedef struct { SimplePattern mPattern;  uint16_t mTime; } PatternAndTime;
 typedef PatternAndTime PatternAndTimeList[];
 
 // These times are in seconds, but could be changed to milliseconds if desired;
 // there's some discussion further below.
 
-const PatternAndTimeList gPlaylist = { 
-  { confetti,                5 },
+const PatternAndTimeList gPlaylist = {{ confetti,                5 },
   { juggle,                 10 },
   { bpm,                    10 },
   { rainbowWithGlitter,      5 },
-  { juggle,                  5 },
+  { bpm,                  5 },
   { applause,               10 },
   { fadeToBlack,             3 }
 };
@@ -191,7 +190,7 @@ void juggle() {
   fadeToBlackBy( leds, NUM_LEDS, 20);
   byte dothue = 0;
   for( int i = 0; i < 8; i++) {
-    leds[beatsin16(i+7,0,NUM_LEDS)] |= CHSV(dothue, 200, 255);
+    leds[beatsin16(i+7,0,NUM_LEDS -1)] |= CHSV(dothue, 200, 255);
     dothue += 32;
   }
 }

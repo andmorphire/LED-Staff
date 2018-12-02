@@ -11,11 +11,11 @@
 #error "Requires FastLED 3.1 or later; check github for latest code."
 #endif
 
-#define DATA_PIN    6
+#define DATA_PIN    3
 //#define CLK_PIN   4
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
-#define NUM_LEDS    180
+#define NUM_LEDS    90
 CRGB leds[NUM_LEDS];
 
 
@@ -25,7 +25,7 @@ CRGB leds[NUM_LEDS];
 #define ZOOMING_BEATS_PER_MINUTE 128
 
 void setup() {
-  delay(3000); // 3 second delay for recovery
+  delay(300); // 3 second delay for recovery
   
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip).setDither(BRIGHTNESS < 255);

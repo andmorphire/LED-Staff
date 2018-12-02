@@ -25,7 +25,7 @@ CRGB leds[NUM_LEDS];
 
 
 void setup() {
-  delay(3000); // 3 second delay for recovery
+  delay(300); // 3 second delay for recovery
   
   // tell FastLED about the LED strip configuration
   FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -34,7 +34,7 @@ void setup() {
   // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
   
-  RestartPerformance();
+  // RestartPerformance();
   Serial.begin(57600);
 }
 
@@ -105,22 +105,22 @@ void Performance()
 {
     AT(0,0,00.001) { FastLED.setBrightness(BRIGHTNESS); }
   FROM(0,0,00.100) { confetti(); }
-//  FROM(0,0,02.500) { juggle(); }
-//  FROM(0,0,04.375) { rainbowWithGlitter(); }
-//  FROM(0,0,05.333) { bpm(); }
-//  FROM(0,0,02.500) { sinelon(); }
-  FROM(0,0,05.000) { juggle(); }
-//  FROM(0,0,09.750) { confetti(); }
-//    AT(0,0,12.000)   { gHue = HUE_PINK; }
-//    AT(0,0,13.000)   { fill_solid(leds, NUM_LEDS, CRGB::Red); }
-//    AT(0,0,16.000)   { fill_solid(leds, NUM_LEDS, CRGB::Blue); }
-//  FROM(0,0,17.500) { fadeToBlack(); }  
-//  FROM(0,0,19.000) { applause(); }  
-//    AT(0,0,20.000)   { FastLED.setBrightness(BRIGHTNESS/2); }
-//    AT(0,0,21.000)   { FastLED.setBrightness(BRIGHTNESS/4); }
-//    AT(0,0,23.000)   { FastLED.setBrightness(BRIGHTNESS/8); }
-//    AT(0,0,24.000)   { FastLED.setBrightness(BRIGHTNESS/16); }
-//  FROM(0,0,25.000) { fadeToBlack(); }  
+  FROM(0,0,5.500) { juggle(); }
+  FROM(0,0,10.375) { rainbowWithGlitter(); }
+  FROM(0,0,20.333) { bpm(); }
+  FROM(0,0,30.500) { sinelon(); }
+  FROM(0,0,35.000) { juggle(); }
+  FROM(0,0,43.750) { confetti(); }
+    AT(0,0,45.000)   { gHue = HUE_PINK; }
+    AT(0,0,50.000)   { fill_solid(leds, NUM_LEDS, CRGB::Red); }
+    AT(0,0,55.000)   { fill_solid(leds, NUM_LEDS, CRGB::Blue); }
+  FROM(0,1,0.500) { fadeToBlack(); }  
+  FROM(0,1,5.000) { applause(); }  
+    AT(0,1,6.000)   { FastLED.setBrightness(BRIGHTNESS/2); }
+    AT(0,1,7.000)   { FastLED.setBrightness(BRIGHTNESS/4); }
+    AT(0,1,8.000)   { FastLED.setBrightness(BRIGHTNESS/8); }
+    AT(0,1,9.000)   { FastLED.setBrightness(BRIGHTNESS/16); }
+  FROM(0,1,10.000) { fadeToBlack(); }  
 }
 
 
@@ -140,7 +140,7 @@ void loop()
   // the letter "r" character from the serial port.  Type "r" into 
   // the Arduino serial monitor and press return to restart the performance.
   // In practice, you could have this check a 'restart' button, or something similar.
-  if( Serial.read() == 'r') RestartPerformance();
+  // if( Serial.read() == 'r') RestartPerformance();
 
   // do some periodic updates
   EVERY_N_MILLISECONDS( 20 ) { gHue++; } // slowly cycle the "base color" through the rainbow
@@ -198,7 +198,7 @@ void juggle() {
   fadeToBlackBy( leds, NUM_LEDS, 20);
   byte dothue = 0;
   for( int i = 0; i < 8; i++) {
-    leds[beatsin16(i+7,0,NUM_LEDS)] |= CHSV(dothue, 200, 255);
+    leds[beatsin16(i+7,0,NUM_LEDS -1)] |= CHSV(dothue, 200, 255);
     dothue += 32;
   }
 }
@@ -207,7 +207,7 @@ void sinelon()
 {
   // a colored dot sweeping back and forth, with fading trails
   fadeToBlackBy( leds, NUM_LEDS, 20);
-  int pos = beatsin16(13,0,NUM_LEDS);
+  int pos = beatsin16(13,0,NUM_LEDS -1);
   leds[pos] += CHSV( gHue, 255, 192);
 }
 

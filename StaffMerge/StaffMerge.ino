@@ -1,4 +1,5 @@
 #include "FastLED.h"
+#include "stdlib.h"
 
 // Addapted from Mark Kriegsman "FastLED "100-lines-of-code" demo reel", showing just a few 
 // of the kinds of animation patterns you can quickly and easily 
