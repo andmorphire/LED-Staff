@@ -34,6 +34,10 @@ byte idex = 255;   //for meteor
 byte meteorLength = 29;  //for meteor
 
 
+volatile uint8_t style = 0; //for strobe
+volatile long lastRun = 0;  //for strobe
+const uint8_t pause = 20;   //for strobe
+
 
 
 void setup() {
@@ -116,38 +120,44 @@ static bool fromTC( uint32_t tc)
 void Performance()
 {
     AT(0,0,00.001) { FastLED.setBrightness(BRIGHTNESS); }
-  FROM(0,0,00.100) { colorshift(); }
-  FROM(0,0,07.020) { lightning(); }
-  FROM(0,0,09.010) { meteor(); }
-  FROM(0,0,19.560) { povC(); }
-  FROM(0,0,25.400) { povA(); }
-  FROM(0,0,29.550) { rainbow(); }
-  FROM(0,0,35.050) { theaterChaseRainbow(); }
-  FROM(0,0,46.030) { rainbowWithGlitter(); }
-  FROM(0,0,49.050) { confetti(); }
-  FROM(0,0,57.330) { bpm(); }
-  FROM(0,1,04.070) { povD(); }
-  FROM(0,1,11.060) { povB(); }
-  FROM(0,1,26.810) { juggle(); }
-  FROM(0,1,32.810) { meteor(); }
-  FROM(0,1,41.000) { fadeToBlack(); }
-  FROM(0,1,42.000) { lightning(); }
-  FROM(0,1,46.000) { povB(); }
-  FROM(0,1,55.690) { povC(); }
-  FROM(0,2,02.020) { povA(); }
-  FROM(0,2,14.180) { rainbowWithGlitter(); }
-  FROM(0,2,22.590) { colorshift(); }
-  FROM(0,2,26.750) { povB(); }
-  FROM(0,2,31.750) { confetti(); }
-    AT(0,2,32.000)   { gHue = HUE_PINK; }
-    AT(0,2,33.000)   { fill_solid(leds, NUM_LEDS, CRGB::Red); }
-    AT(0,2,34.000)   { fill_solid(leds, NUM_LEDS, CRGB::Blue); } 
-  FROM(0,2,35.000) { applause(); }  
-    AT(0,2,36.000)   { FastLED.setBrightness(BRIGHTNESS/2); }
-    AT(0,2,37.000)   { FastLED.setBrightness(BRIGHTNESS/4); }
-    AT(0,2,38.000)   { FastLED.setBrightness(BRIGHTNESS/8); }
-    AT(0,2,39.000)   { FastLED.setBrightness(BRIGHTNESS/16); }
-  FROM(0,2,40.000) { fadeToBlack(); }  
+  FROM(0,0,00.100) { confetti(); }
+  FROM(0,0,04.020) { sinelon(); }
+  FROM(0,0,11.510) { juggle(); }
+  FROM(0,0,27.560) { bpm(); }
+  FROM(0,0,32.000) { fadeToBlack(); }
+  FROM(0,0,34.000) { strobe(); }
+  FROM(0,0,38.550) { povC(); }
+  FROM(0,0,51.050) { povA(); }
+  FROM(0,1,07.030) { colorshift(); }
+  FROM(0,1,21.050) { rainbowWithGlitter(); }
+  FROM(0,1,35.330) { bpm(); }
+  FROM(0,1,46.070) { sinelon(); }
+  FROM(0,1,50.060) { juggle(); }
+  FROM(0,2,02.010) { colorshift(); }
+  FROM(0,2,15.810) { rainbowWithGlitter(); }
+  FROM(0,2,25.000) { fadeToBlack(); }
+  FROM(0,2,27.000) { strobe(); }
+  FROM(0,2,29.500) { povD(); }
+  FROM(0,2,34.500) { povB(); }
+  FROM(0,2,40.500) { povC(); }
+  FROM(0,2,46.520) { povA(); }
+  FROM(0,3,00.000) { confetti(); }
+  FROM(0,3,05.990) { fadeToBlack(); }
+  // FROM(0,2,38.590) { confetti(); }
+  // FROM(0,2,42.200) { povA(); }
+//  FROM(0,2,49.000) { povB(); }
+//  FROM(0,2,56.750) { colorshift(); }
+//  FROM(0,3,08.750) { confetti(); }
+//    AT(0,3,09.000)   { gHue = HUE_PINK; }
+//    AT(0,3,10.000)   { fill_solid(leds, NUM_LEDS, CRGB::Red); }
+//    AT(0,3,11.000)   { fill_solid(leds, NUM_LEDS, CRGB::Blue); } 
+//  FROM(0,3,12.000) { applause(); }  
+//    AT(0,3,13.000)   { FastLED.setBrightness(BRIGHTNESS/2); }
+//    AT(0,3,14.000)   { FastLED.setBrightness(BRIGHTNESS/4); }
+//    AT(0,3,15.000)   { FastLED.setBrightness(BRIGHTNESS/8); }
+//    AT(0,3,16.000)   { FastLED.setBrightness(BRIGHTNESS/16); }
+//  FROM(0,3,17.000) { fadeToBlack(); }  
+  //  AT(0,3,18.000)   { RestartPerformance(); }
 }
 
 
@@ -440,6 +450,18 @@ void colorshift() {
     /* color spectrum generator
      *  fill_rainbow( leds, NUM_LEDS, gHue, 3);
      */
+}
+
+void strobe() {
+  if (millis() - lastRun > pause) {
+    if (style) {
+      LEDS.showColor(CRGB::White);
+    } else {
+      LEDS.showColor(CRGB::Black);
+    }
+    style = !style;
+    lastRun = millis();
+  }
 }
 
 //Rainbow chase stuff
